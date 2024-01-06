@@ -1,20 +1,28 @@
-package org.michaelheinecke.quarkus.orm;
+package org.michaelheinecke.quarkus.jdbc;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
+import jakarta.inject.Inject;
+import java.sql.SQLException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
-class GreetingResourceTest {
-    @Test
-    void testHelloEndpoint() {
-        given()
-          .when().get("/hello")
-          .then()
-             .statusCode(200)
-             .body(is("Hello from RESTEasy Reactive"));
-    }
+public class ArtistRepositoryTest {
 
+  @Inject
+  ArtistRepository repository;
+
+  @Test
+  public void shouldCreateAndFindAnArtist() throws SQLException {
+    Artist artist = new Artist("name", "bio");
+
+    repository.persist(artist);
+    assertNotNull(artist.getId());
+
+    artist = repository.findById(artist.getId());
+    assertEquals("name", artist.getName());
+  }
 }
