@@ -1,20 +1,29 @@
-package org.michaelheinecke.quarkus.orm;
+package org.michaelheinecke.quarkus.jpa;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
-
 @QuarkusTest
-class GreetingResourceTest {
-    @Test
-    void testHelloEndpoint() {
-        given()
-          .when().get("/hello")
-          .then()
-             .statusCode(200)
-             .body(is("Hello from RESTEasy Reactive"));
-    }
+public class CustomerRepositoryTest {
+
+  @Inject
+  CustomerRepository repository;
+
+  @Test
+  @TestTransaction
+  public void shouldCreateAndFindACustomer() {
+    Customer customer = new Customer("first name", "last name", "email");
+
+    repository.persist(customer);
+    assertNotNull(customer.getId());
+
+    customer = repository.findById(customer.getId());
+    assertEquals("last name", customer.getLastName());
+  }
 
 }

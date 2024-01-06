@@ -1,8 +1,21 @@
-package org.michaelheinecke.quarkus.orm;
+package org.michaelheinecke.quarkus.jpa;
 
-import io.quarkus.test.junit.QuarkusIntegrationTest;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 
-@QuarkusIntegrationTest
-class GreetingResourceIT extends GreetingResourceTest {
-    // Execute the same tests but in packaged mode.
+@ApplicationScoped
+public class CustomerRepository {
+
+  @Inject
+  EntityManager em;
+
+  public void persist(Customer customer) {
+    em.persist(customer);
+  }
+
+  public Customer findById(Long id) {
+    return em.find(Customer.class, id);
+  }
+
 }
